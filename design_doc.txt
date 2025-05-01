@@ -1,0 +1,95 @@
+## SIMPLE Design Doc
+## Version 1.0
+
+# Context:
+    A simple web applicaiton for AI inference app
+
+# Goal:
+    - A simple web applicaiton for AI inference
+    - The frontend has following pages: landing, login/sign up, 
+      inference, pricing, FAQs, contact
+    - Backend API to facilitate all the frontend features
+    - Lightweight frontend that facilitates SEO enhancements
+
+# Non-goals:
+    - User work storage. That is user work persists in alloted storage.
+
+# System Design:
+    - Frontend: React
+    - Backend: Django Rest Framework
+    - Database: MySQL
+    - AI hosting and inference: Replicate
+    - Static media: cloudflare or S3 for CDN
+    - Logging & monitoring: Sentry 
+
+# API:
+    ## put the API schema here later 
+
+# Data Storage:
+    - Login credentials: MySQL 
+    - User usage credits: MySQL 
+
+# Design Constraints:
+    - low recurring costs
+
+# Choices Rationale:
+    # Frontend framework / library:
+        - React (chosen one):
+            - Easier to develop
+            - Virtual DOM\
+            - One-way data binding
+            - Community support
+            - Supports Server Side Rendering (SSR)
+        - Vue:
+            - Large learnining curve
+            - Lightweight
+            - Virtual DOM
+            - Data binding
+            - Enhanced UX and Storage
+    
+    # CSR or SSR required:
+        - Critical time-to-market go ahead with CSR
+        - Mostly user interaction based
+        - Explore SEO techniques with CSR
+        - Hydrate server-rendered static HTML (with React)
+
+    # Backend framework:
+        - Django REST (Chosen one):
+            - Mature with large Community
+            - Comes with batteries: ORM, authentication, view classes
+            - Features stump steep learning curve
+            - Secure: helps avoid common mistakes like SQL injection,
+                cross-site scripting, cross-site request forgery and 
+                click-jacking
+        - Fast API:
+            - Easy to implement
+            - async-ready      
+            - highly performant
+            - auto-generated documentation
+            - No batteries: requires manual setup for Auth, ORM
+    
+    # Database:
+        - PostgreSQL:
+            - Object relational db
+            - Fully ACID compliant
+            - suppports concurrent read-write operations against a DB. 
+              Uses multiversion concurrency control, which leverages parallel
+              query strategies without using read or write locks
+            - uses more resources to support complex queries
+            - has robust indexing and data partitioning improve query performance
+              and time to insights as Database grows
+        - MySQL (Chosen One):
+            - relational db
+            - ACID compliant depending on engine (InnoDB)
+            - suitable for read-heavy with row-locking quicker reads.
+              offers a lift for readonly operations
+            - Lightweight serves the purpose of storing login and credits
+
+    # Logging and Monitoring:
+        - Sentry:
+        - Prometheus:
+    
+    # Static/Media:
+        - S3 for CDN
+        - Cloudflare
+
