@@ -6,8 +6,8 @@
 
 # Goal:
     - A simple web applicaiton for AI inference
-    - The frontend has following pages: landing, login/sign up, 
-      inference, pricing, FAQs, contact
+    - The frontend has following pages: home, login/sign up, 
+      removebg, pricing, FAQs, contact
     - Backend API to facilitate all the frontend features
     - Lightweight frontend that facilitates SEO enhancements
 
@@ -36,12 +36,12 @@
     # Frontend framework / library:
         - React (chosen one):
             - Easier to develop
-            - Virtual DOM\
+            - Virtual DOM
             - One-way data binding
             - Community support
             - Supports Server Side Rendering (SSR)
         - Vue:
-            - Large learnining curve
+            - Large learning curve
             - Lightweight
             - Virtual DOM
             - Data binding

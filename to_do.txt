@@ -1,0 +1,9 @@
+## Signup and login:
+    High priority:
+        - Login throttling
+
+    Low priority:
+        - Third party authentication (OAuth2)
+
+## Tests:
+    

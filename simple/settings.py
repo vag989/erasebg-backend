@@ -12,21 +12,30 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+from decouple import Config, RepositoryEnv, Csv
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Determine which file to load
+# ToDo add DJANGO_ENV when running in production accordingly
+ENV_FILE = ".env.production" if os.getenv("DJANGO_ENV") == "production" else ".env"
+
+# Load the selected .env file
+config = Config(RepositoryEnv(ENV_FILE))
+
+# Now use config() instead of the global config()
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = config("DEBUG", default=False, cast=bool)
+SECRET_KEY = config("SECRET_KEY")
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', cast=Csv())
+DJANGO_ENV = config('DJANGO_ENV', default='development')
+
+REPLICATE_API_TOKEN = config("REPLICATE_API_TOKEN")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4ziaiojz48=_^9ctk=325ne-hhj&d92rq2t1z!6#c#6ay7tlbd'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -42,9 +51,12 @@ INSTALLED_APPS = [
     'users',
     'infer',
     'payments',
+    # other apps
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,6 +64,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# OR allow specific origins
+CORS_ALLOWED_ORIGINS = [
+    config('CORS_ALLOWED_ORIGINS', cast=str),  # Replace with your frontend URL
 ]
 
 ROOT_URLCONF = 'simple.urls'
@@ -70,6 +87,21 @@ TEMPLATES = [
         },
     },
 ]
+
+# DRF settings for Authentication
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Use JWT authentication
+        # 'rest_framework.authentication.TokenAuthentication',  # Alternatively for simple token
+    ],
+
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.MultiPartParser',  # To handle multipart form data (including files)
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+    ],
+}
+
 
 WSGI_APPLICATION = 'simple.wsgi.application'
 
@@ -94,6 +126,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -132,3 +166,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cookies related
+
+COOKIE_SETTINGS = {
+    "ACCESS_TOKEN_VALIDITY": 3600,
+    "REFRESH_TOEKN_VALIDITY": 86400,
+    "HTTP_ONLY": config('COOKIE_HTTP_ONLY', default=True, cast=bool),
+    "SECURE_COOKIE": config('COOKIE_SECURE', default=True, cast=bool),
+    "SAME_SITE": config('COOKIE_SAMESITE', default='strict'),
+}
