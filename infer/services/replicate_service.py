@@ -1,9 +1,6 @@
-import io
-import base64
 from PIL import Image
 from typing import Dict
 
-import requests
 from requests.exceptions import Timeout
 import replicate
 from django.core.files.uploadedfile import InMemoryUploadedFile

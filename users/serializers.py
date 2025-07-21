@@ -1,14 +1,16 @@
 import re
 
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 
-from users.models import CustomUser
+from users.models import CustomUser, Credits, BulkCredits, APICredits
 
 from simple.api.constants import MESSAGES
 
+
 class UserSerializer(serializers.ModelSerializer):
     """
-    Serializer to save user data
+    Serializer for CustomUser Model
     """
     password = serializers.CharField(write_only=True)
     
@@ -40,3 +42,49 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])  # Hashing the password
         user.save()
         return user
+    
+
+class CreditsSerializer(serializers.Serializer):
+    """
+    Serializer for Credits model
+            """
+    class Meta:
+        model = Credits
+        fields = ['id', 'username', 'credits', 'created', 'expires']
+
+
+class BulkCreditsSerializer(serializers.Serializer):
+    """
+    Serializer for BulkCredits model
+    """
+    class Meta:
+        model = BulkCredits
+        fields = ['id', 'username', 'credits', 'created', 'expires']
+
+
+class APICreditsSerializer(serializers.Serializer):
+    """
+    Serializer for APICredits model
+    """
+    class Meta:
+        model = APICredits
+        fields = ['id', 'username', 'credits', 'created', 'expires']
+
+
+class ValidateAccessTokenSerializer(serializers.Serializer):
+    """
+    Serializer to validate access token
+    """
+    access_token = serializers.CharField(
+        help_text="Access token to validate user access"
+    )
+
+    def validate_access_token(self, value):
+        """
+        Validate the access token format.
+        """
+        if not value or len(value) < 10:
+            raise serializers.ValidationError(
+                "Invalid access token provided."
+            )
+        return value

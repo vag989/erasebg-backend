@@ -67,9 +67,11 @@ MIDDLEWARE = [
 ]
 
 # OR allow specific origins
-CORS_ALLOWED_ORIGINS = [
-    config('CORS_ALLOWED_ORIGINS', cast=str),  # Replace with your frontend URL
-]
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    cast=lambda v: [s.strip() for s in v.split(',')],
+    default=['http://localhost:5173', 'http://127.0.0.1:5173']
+)
 
 ROOT_URLCONF = 'simple.urls'
 
@@ -105,7 +107,6 @@ REST_FRAMEWORK = {
 
 WSGI_APPLICATION = 'simple.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -121,8 +122,11 @@ DATABASES = {
         'PASSWORD': '1234ABcd,.',
         'HOST': 'localhost',
         'PORT': '3306',
-    }
+    },
 }
+
+# Timeout in case of database lock (in seconds)
+DB_LOCK_WAIT_TIMEOUT = 2
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -175,4 +179,12 @@ COOKIE_SETTINGS = {
     "HTTP_ONLY": config('COOKIE_HTTP_ONLY', default=True, cast=bool),
     "SECURE_COOKIE": config('COOKIE_SECURE', default=True, cast=bool),
     "SAME_SITE": config('COOKIE_SAMESITE', default='strict'),
+}
+
+WORKER_COOKIE_SETTINGS = {
+    "DOMAIN": "simple-worker.louiskumarmathew.workers.dev",
+    "ACCESS_TOKEN_VALIDITY": 3600,
+    "HTTP_ONLY": config('COOKIE_HTTP_ONLY', default=True, cast=bool),
+    "SECURE_COOKIE": config('COOKIE_SECURE', default=True, cast=bool),
+    "SAME_SITE": "None",
 }

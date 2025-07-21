@@ -21,5 +21,5 @@ urlpatterns = [
     # path('api-auth/', include('rest_framework.urls')), #ToDo: remove this later
     path('api/users/', include('users.urls')),
     path('api/', include('infer.urls')),
-    # path('payments/', include('payments.urls')),
+    path('api/', include('payments.urls')),
 ]

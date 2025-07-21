@@ -42,7 +42,7 @@ class PollPredictionSerializer(serializers.Serializer):
     """
     Serializer to handle data for polling
     replicate prediction
-    """ 
+    """
     prediction_id = serializers.CharField()
 
 
@@ -52,3 +52,11 @@ class FetchOutputSerializer(serializers.Serializer):
     output of completed prediction
     """
     output_url = serializers.URLField()
+
+
+class WrapUpInferenceSerializer(serializers.Serializer):
+    """
+    Serializer to handle wrapping up inference
+    by deducting credits
+    """
+    job_token = serializers.CharField()
