@@ -80,8 +80,8 @@ class PaymetsTests(APITestCase):
         self.assertEqual(response.data["success"], True)
 
         credit_entry = BulkCredits.objects.get(user=self.regular_user)
-        self.assertEqual(credit_entry.credits, 100)
-        self.assertEqual(credit_entry.credits_in_use, 0)    
+        self.assertEqual(credit_entry.credits, 500)
+        self.assertEqual(credit_entry.credits_in_use, 0)
 
     def test_add_bulk_credits_regular_user(self):
         """

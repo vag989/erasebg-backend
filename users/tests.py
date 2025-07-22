@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 
+from users.models import CustomUser, Credits, BulkCredits, APICredits
 
 class UsersTests(APITestCase):
     """
@@ -179,14 +180,255 @@ class UsersTests(APITestCase):
         self.assertEqual(response.data.get('success'), True)
 
 
-# class UserCreditsTests(APITestCase):
-#     """
-#     Credits tests in user apps
-#     """
+class UserCreditsTests(APITestCase):
+    """
+    Credits tests in user apps
+    """
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = CustomUser.objects.create_user(
+            username='user',
+            email='user@example.com',
+            password='user123'
+        )
 
-#     @classmethod
-#     def setUpTestData(cls):
+        cls.num_credits = 100
+        cls.num_bulk_credits = 200
+        cls.num_api_credits = 300
+
+        cls.credits = Credits.objects.create(user=cls.user, credits=cls.num_credits)
+        cls.bulk_credits = BulkCredits.objects.create(user=cls.user, credits=cls.num_bulk_credits)
+        cls.api_credits = APICredits.objects.create(user=cls.user,
+                                                    credits=cls.num_api_credits)
+
+    @classmethod
+    def setUp(cls):
+        cls.credentials = {
+            "username": "user",
+            "password": "user123",
+        }
+
+        url = reverse('user-login')
+        cls.login_res = cls.client.post(url, cls.credentials, format='json')
+
+    def setup_multiple_credit_entries(self, model):
+        """
+        Sets up multiple credit entries in given model
+        """
+        model.objects.all().delete()
+        entries = [700, 800, 600]
+
+        for entry in entries:
+            model.objects.create(user=self.user, credits=entry)
         
+        return entries
 
+    def test_get_credits(self):
+        """
+        Tests fetching the credits for a user
+        """
+        url = reverse('user-credits')
+        response = self.client.get(url)
 
-    
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]["username"], self.credentials["username"])
+        self.assertEqual(response.data[0]["credits"], self.num_credits)
+        self.assertIn("created", response.data[0])
+        self.assertIn("expires", response.data[0])
+
+    def test_get_credits_no_auth(self):
+        """
+        Tests fetching credits for a user without 
+        JWT access_token
+        """
+        url = reverse('user-credits')
+
+        self.client.cookies.pop("access_token")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_credits_corrupt_token(self):
+        """
+        Tests fetching credits for a user with 
+        corrupted JWT access_token
+        """
+        url = reverse('user-credits')
+
+        self.client.cookies["access_token"] = "corrupted_token"
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_credits_wiht_no_credits(self):
+        """
+        Tests fetching credits with no credits 
+        for a user
+        """
+        self.credits.delete()
+        url = reverse('user-credits')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["success"], False)
+
+    def test_get_credits_multiple_credits(self):
+        """
+        Tests fetching credits with multiple 
+        credit entries for a user
+        """
+        credits_entries = self.setup_multiple_credit_entries(Credits)
+
+        url = reverse('user-credits')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
+    def test_get_bulk_credits(self):
+        """
+        Tests fetching the bulk credits for user
+        """
+        url = reverse('user-bulk-credits')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]["username"], self.credentials["username"])
+        self.assertEqual(response.data[0]["credits"], self.num_bulk_credits)
+        self.assertIn("created", response.data[0])
+        self.assertIn("expires", response.data[0])
+
+    def test_get_bulk_credits_no_auth(self):
+        """
+        Tests fetching bulk credits for a user without 
+        JWT access_token
+        """
+        url = reverse('user-bulk-credits')
+
+        self.client.cookies.pop("access_token")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_bulk_credits_corrupt_token(self):
+        """
+        Tests fetching bulk credits for a user with 
+        corrupted JWT access_token
+        """
+        url = reverse('user-bulk-credits')
+
+        self.client.cookies["access_token"] = "corrupted_token"
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_bulk_credits_wiht_no_credits(self):
+        """
+        Tests fetching bulk credits with no credits 
+        for a user
+        """
+        self.bulk_credits.delete()
+        url = reverse('user-bulk-credits')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["success"], False)
+
+    def test_get_bulk_credits_multiple_credits(self):
+        """
+        Tests fetching bulk credits with multiple 
+        credit entries for a user
+        """
+        credits_entries = self.setup_multiple_credit_entries(BulkCredits)
+
+        url = reverse('user-bulk-credits')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
+    def test_get_api_credits(self):
+        """
+        Tests fetching the api credits for user
+        """
+        url = reverse('user-api-credits')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]["username"], self.credentials["username"])
+        self.assertEqual(response.data[0]["credits"], self.num_api_credits)
+        self.assertIn("created", response.data[0])
+        self.assertIn("expires", response.data[0])
+
+    def test_get_api_credits_no_auth(self):
+        """
+        Tests fetching api credits for a user without 
+        JWT access_token
+        """
+        url = reverse('user-api-credits')
+
+        self.client.cookies.pop("access_token")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_api_credits_corrupt_token(self):
+        """
+        Tests fetching api credits for a user with 
+        corrupted JWT access_token
+        """
+        url = reverse('user-api-credits')
+
+        self.client.cookies["access_token"] = "corrupted_token"
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_api_credits_wiht_no_credits(self):
+        """
+        Tests fetching api credits with no credits 
+        for a user
+        """
+        self.api_credits.delete()
+        url = reverse('user-api-credits')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["success"], False)
+
+    def test_get_api_credits_multiple_credits(self):
+        """
+        Tests fetching api credits with multiple 
+        credit entries for a user
+        """
+        credits_entries = self.setup_multiple_credit_entries(APICredits)
+
+        url = reverse('user-api-credits')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])

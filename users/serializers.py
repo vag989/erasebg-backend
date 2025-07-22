@@ -44,31 +44,15 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
 
-class CreditsSerializer(serializers.Serializer):
+class CreditsSerializer(serializers.ModelSerializer):
     """
     Serializer for Credits model
-            """
+    """
+    username = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Credits
-        fields = ['id', 'username', 'credits', 'created', 'expires']
-
-
-class BulkCreditsSerializer(serializers.Serializer):
-    """
-    Serializer for BulkCredits model
-    """
-    class Meta:
-        model = BulkCredits
-        fields = ['id', 'username', 'credits', 'created', 'expires']
-
-
-class APICreditsSerializer(serializers.Serializer):
-    """
-    Serializer for APICredits model
-    """
-    class Meta:
-        model = APICredits
-        fields = ['id', 'username', 'credits', 'created', 'expires']
+        fields = ['username', 'credits', 'created', 'expires']
 
 
 class ValidateAccessTokenSerializer(serializers.Serializer):

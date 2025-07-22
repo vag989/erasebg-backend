@@ -5,20 +5,21 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from rest_framework_simplejwt.authentication import JWTAuthentication
+# from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from users.models import Credits, BulkCredits, APICredits
-from users.serializers import CreditsSerializer, BulkCreditsSerializer, APICreditsSerializer
+from users.serializers import CreditsSerializer
+from users.authentication import JWTCookieAuthentication
 
+from simple.api.constants import MESSAGES
 from simple.settings import DEBUG
-
 
 class CreditsView(APIView):
     """
     View to manage credits
     """
-    permission_classes = [IsAuthenticated] if not DEBUG else []
-    authentication_classes = [JWTAuthentication] if not DEBUG else []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTCookieAuthentication]
 
     def get(self, request, *args, **kwargs):
         """
@@ -27,26 +28,28 @@ class CreditsView(APIView):
         """
         user = request.user
 
-        try:
-            credits = Credits.objects.get(user=user)
-            serializer = CreditsSerializer(credits, many=True)
-        
-            return  Response(serializer.data, status=status.HTTP_200_OK)
-        except ObjectDoesNotExist as e:
+        credits = user.credits.all().order_by('created')
+
+        if not credits.exists():
             return Response(
-                { 
-                    "message": str(e),
-                    "success": False,
+                {
+                    "message": MESSAGES["CREDITS_UNAVAILABLE"],
+                    "success": False, 
                 },
-                    status=status.HTTP_400_BAD_REQUEST)
+                    status=status.HTTP_400_BAD_REQUEST
+            )
         
+        serializer = CreditsSerializer(credits, many=True)
+
+        return  Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class BulkCreditsView(APIView):
     """
     View to manage bulk credits
     """
-    permission_classes = [IsAuthenticated] if not DEBUG else []
-    authentication_classes = [JWTAuthentication] if not DEBUG else []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTCookieAuthentication]
 
     def get(self, request, *args, **kwargs):
         """
@@ -55,23 +58,28 @@ class BulkCreditsView(APIView):
         """
         user = request.user
 
-        try:
-            credits = BulkCredits.objects.get(user=user)
-            serializer = BulkCreditsSerializer(credits, many=True)
-        
-            return  Response(serializer.data, status=status.HTTP_200_OK)
-        except ObjectDoesNotExist as e:
+        credits = user.bulk_credits.all().order_by('created')
+
+        if not credits.exists():
             return Response(
-                { "message": str(e) }, 
-                status=status.HTTP_400_BAD_REQUEST)
+                {
+                    "message": MESSAGES["CREDITS_UNAVAILABLE"],
+                    "success": False, 
+                },
+                    status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        serializer = CreditsSerializer(credits, many=True)
+
+        return  Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class APICreditsView(APIView):
     """
     View to manage API credits
     """
-    permission_classes = [IsAuthenticated] if not DEBUG else []
-    authentication_classes = [JWTAuthentication] if not DEBUG else []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTCookieAuthentication]
 
     def get(self, request, *args, **kwargs):
         """
@@ -80,17 +88,17 @@ class APICreditsView(APIView):
         """
         user = request.user
 
-        try:
-            credits = APICredits.objects.get(user=user)
-            serializer = APICreditsSerializer(credits, many=True)
-        
-            return  Response(serializer.data, status=status.HTTP_200_OK)
-        except ObjectDoesNotExist as e:
+        credits = user.api_credits.all().order_by('created')
+
+        if not credits.exists():
             return Response(
-                { "message": str(e) }, 
-                status=status.HTTP_400_BAD_REQUEST)
+                {
+                    "message": MESSAGES["CREDITS_UNAVAILABLE"],
+                    "success": False, 
+                },
+                    status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        serializer = CreditsSerializer(credits, many=True)
 
-
-
-
-
+        return  Response(serializer.data, status=status.HTTP_200_OK)

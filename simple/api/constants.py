@@ -62,8 +62,8 @@ MESSAGES = {
     # Credits related
     "CREDITS_ADDED": "credits added succesfully.",
     "CREDITS_ADD_FAILED": "Credits add failed.",
-    "CREDITS_AVAILABLE": "Credits available. Proceed.",
-    "CREDITS_UNAVAILABLE": "Credits unavailable. Do not proceed.",
+    "CREDITS_AVAILABLE": "Credits available.",
+    "CREDITS_UNAVAILABLE": "Credits unavailable.",
     "CREDITS_DEDUCTED": "Credits deducted successfully.",
     "CREDITS_NOT_DEDUCTED": "Credits not deducted.",
 
