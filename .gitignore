@@ -1,3 +1,5 @@
 .env
 .env.production
 .env.staging
+to_do.txt
+design_doc.txt
