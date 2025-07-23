@@ -1,6 +1,11 @@
+# Virtual environment
 .venv/
+
+# Environent files
 .env
 .env.production
 .env.staging
+
+# text files
 to_do.txt
 design_doc.txt
