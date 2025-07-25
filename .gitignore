@@ -1,6 +1,12 @@
 # Virtual environment
 .venv/
 
+# pycache
+*/__pycache__/
+
+# donot include migrations
+*/migrations/
+
 # Environent files
 .env
 .env.production
