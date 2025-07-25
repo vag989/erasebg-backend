@@ -5,7 +5,7 @@ from requests.exceptions import Timeout
 import replicate
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from simple.api.constants import REMOVE_BG_MODEL
+from erasebg.api.constants import REMOVE_BG_MODEL
 
 
 # def erase_bg(image: InMemoryUploadedFile, prompt: str) -> Dict[any, any]:

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from users.models import APIToken
 from users.serializers import UserSerializer
 
-from simple.api.constants import MESSAGES
+from erasebg.api.constants import MESSAGES
 
 
 class UserSignUpView(APIView):

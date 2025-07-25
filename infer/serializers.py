@@ -5,7 +5,7 @@ Serializers of infer
 from PIL import Image
 from rest_framework import serializers
 
-from simple.api.constants import DEFAULT_PROMPT, ALLOWED_IMAGE_TYPES
+from erasebg.api.constants import DEFAULT_PROMPT, ALLOWED_IMAGE_TYPES
 
 
 class EraseBGSerializer(serializers.Serializer):

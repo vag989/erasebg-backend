@@ -14,8 +14,8 @@ from infer.serializers import EraseBGSerializer, PollPredictionSerializer, Fetch
 from users.authentication import JWTCookieAuthentication
 from infer.services.replicate_service import erase_bg
 
-from simple.settings import DEBUG
-from simple.api.constants import MESSAGES
+from erasebg.settings import DEBUG
+from erasebg.api.constants import MESSAGES
 
 from PIL import Image
 

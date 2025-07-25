@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 
 from users.models import CustomUser, Credits, BulkCredits, APICredits
 
-from simple.api.constants import MESSAGES
+from erasebg.api.constants import MESSAGES
 
 
 class UserSerializer(serializers.ModelSerializer):

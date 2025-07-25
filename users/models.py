@@ -6,8 +6,8 @@ from django.utils import timezone
 
 from rest_framework.authtoken.models import Token
 
-from simple.settings import AUTH_USER_MODEL
-from simple.api.constants import USERNAME_MAX_LENGTH, API_TOKEN_MAX_LENGTH, JOB_TOKEN_MAX_LENGTH, JOB_TOKEN_EXPIRY_MINUTES, CREDITS_EXPIRY_DAYS
+from erasebg.settings import AUTH_USER_MODEL
+from erasebg.api.constants import USERNAME_MAX_LENGTH, API_TOKEN_MAX_LENGTH, JOB_TOKEN_MAX_LENGTH, JOB_TOKEN_EXPIRY_MINUTES, CREDITS_EXPIRY_DAYS
 
 
 class CustomUser(AbstractUser):

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from simple.api.constants import USERNAME_MAX_LENGTH
+from erasebg.api.constants import USERNAME_MAX_LENGTH
 
 
 class AddCreditsSerializer(serializers.Serializer):

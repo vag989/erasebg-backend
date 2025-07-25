@@ -6,7 +6,7 @@ import os
 
 from django.apps import AppConfig
 
-from simple.settings import REPLICATE_API_TOKEN
+from erasebg.settings import REPLICATE_API_TOKEN
 
 class InferConfig(AppConfig):
     """

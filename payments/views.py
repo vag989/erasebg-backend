@@ -10,7 +10,7 @@ from payments.serializers import AddCreditsSerializer
 from users.authentication import JWTCookieAuthentication
 from users.models import CustomUser, Credits, BulkCredits
 
-from simple.api.constants import MESSAGES
+from erasebg.api.constants import MESSAGES
 
 # ToDo: Temporary to be removed
 class AddCreditsView(APIView):

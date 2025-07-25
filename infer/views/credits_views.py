@@ -19,8 +19,8 @@ from infer.serializers import WrapUpInferenceSerializer
 from users.models import Credits, BulkCredits
 from users.authentication import JWTCookieAuthentication
 
-from simple.settings import DEBUG, DB_LOCK_WAIT_TIMEOUT
-from simple.api.constants import MESSAGES
+from erasebg.settings import DEBUG, DB_LOCK_WAIT_TIMEOUT
+from erasebg.api.constants import MESSAGES
 
 
 from infer.utils.utils import tabulate_db_entries

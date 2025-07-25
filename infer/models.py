@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 
 from users.models import Credits, BulkCredits
 
-from simple.api.constants import JOB_TOKEN_MAX_LENGTH, JOB_TOKEN_EXPIRY_MINUTES
+from erasebg.api.constants import JOB_TOKEN_MAX_LENGTH, JOB_TOKEN_EXPIRY_MINUTES
 # from simple.settings import AUTH_USER_MODEL
 
 

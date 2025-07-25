@@ -10,8 +10,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import CustomUser
 
-from simple.api.constants import MESSAGES
-from simple.settings import COOKIE_SETTINGS, WORKER_COOKIE_SETTINGS
+from erasebg.api.constants import MESSAGES
+from erasebg.settings import COOKIE_SETTINGS, WORKER_COOKIE_SETTINGS
 
 
 class UserLoginView(APIView):

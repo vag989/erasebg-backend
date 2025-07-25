@@ -11,8 +11,8 @@ from users.models import Credits, BulkCredits, APICredits
 from users.serializers import CreditsSerializer
 from users.authentication import JWTCookieAuthentication
 
-from simple.api.constants import MESSAGES
-from simple.settings import DEBUG
+from erasebg.api.constants import MESSAGES
+from erasebg.settings import DEBUG
 
 class CreditsView(APIView):
     """
