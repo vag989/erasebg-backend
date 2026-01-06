@@ -1,15 +1,13 @@
-import base64
-
 from django.urls import reverse
 
 
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from users.models import CustomUser, Credits, BulkCredits
+from users.models import CustomUser, Credits, BulkCredits, APICredits
 
 # Create your tests here.
-class PaymetsTests(APITestCase):
+class AddCreditsTests(APITestCase):
     """
     Tests cases for payments app
     """
@@ -30,6 +28,7 @@ class PaymetsTests(APITestCase):
             password='adminpass123'
         )
 
+
     def test_add_credits_admin(self):
         """
         Tests an admin can add credits to a user
@@ -49,6 +48,12 @@ class PaymetsTests(APITestCase):
         self.assertEqual(credit_entry.credits, 300)
         self.assertEqual(credit_entry.credits_in_use, 0)
 
+        bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)
+        self.assertFalse(bulk_credit_entry.exists())
+
+        api_credit_entry = APICredits.objects.filter(user=self.regular_user)
+        self.assertFalse(api_credit_entry.exists())
+
 
     def test_add_credits_regular_user(self):
         """
@@ -64,26 +69,34 @@ class PaymetsTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         
-    def test_add_bulk_credits_admin(self):
+    def test_add_credits_bulk_credits_admin(self):
         """
         Tests an admin can add credits to a user
         """
         self.client.force_authenticate(user=self.admin_user)
-        url = reverse('payments-add-bulk-credits')
+        url = reverse('payments-add-credits')
         data = {
             "username": "regular_user",
             "num_credits": 500,
+            "bulk_credits": 100,
         }
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["success"], True)
 
-        credit_entry = BulkCredits.objects.get(user=self.regular_user)
+        credit_entry = Credits.objects.get(user=self.regular_user)
         self.assertEqual(credit_entry.credits, 500)
         self.assertEqual(credit_entry.credits_in_use, 0)
 
-    def test_add_bulk_credits_regular_user(self):
+        bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)[0]
+        self.assertEqual(bulk_credit_entry.credits, 100)
+        self.assertEqual(bulk_credit_entry.credits_in_use, 0)
+
+        api_credit_entry = APICredits.objects.filter(user=self.regular_user)
+        self.assertFalse(api_credit_entry.exists())
+
+    def test_add_credits_bulk_credits_regular_user(self):
         """
         Tests a regular user cannot add credits
         """
@@ -92,6 +105,95 @@ class PaymetsTests(APITestCase):
         data = {
             "username": "regular_user",
             "num_credits": 100,
+            "bulk_credits": 100,
+        }
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_add_credits_api_credits_admin(self):
+        """
+        Tests an admin adds credits with api credits
+        """
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('payments-add-credits')
+        data = {
+            "username": "regular_user",
+            "num_credits": 500,
+            "api_credits": 100,
+        }
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["success"], True)
+
+        credit_entry = Credits.objects.get(user=self.regular_user)
+        self.assertEqual(credit_entry.credits, 500)
+        self.assertEqual(credit_entry.credits_in_use, 0)
+
+        bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)
+        self.assertFalse(bulk_credit_entry.exists())
+
+        api_credit_entry = APICredits.objects.filter(user=self.regular_user)[0]
+        self.assertEqual(api_credit_entry.credits, 100)
+        self.assertEqual(api_credit_entry.credits_in_use, 0)
+
+    def test_add_credits_api_credits_regular_user(self):
+        """
+        Tests a regular user cannot add credits
+        """
+        self.client.force_authenticate(user=self.regular_user)
+        url = reverse('payments-add-credits')
+        data = {
+            "username": "regular_user",
+            "num_credits": 100,
+            "api_credits": 100,
+        }
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_add_credits_bulk_credits_api_credits_admin(self):
+        """
+        Tests a admin user can add all three types of credits
+        """
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('payments-add-credits')
+        data = {
+            "username": "regular_user",
+            "num_credits": 500,
+            "bulk_credits": 100,
+            "api_credits": 100,
+        }
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["success"], True)
+
+        credit_entry = Credits.objects.get(user=self.regular_user)
+        self.assertEqual(credit_entry.credits, 500)
+        self.assertEqual(credit_entry.credits_in_use, 0)
+
+        bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)[0]
+        self.assertEqual(bulk_credit_entry.credits, 100)
+        self.assertEqual(bulk_credit_entry.credits_in_use, 0)
+
+        api_credit_entry = APICredits.objects.filter(user=self.regular_user)[0]
+        self.assertEqual(api_credit_entry.credits, 100)
+        self.assertEqual(api_credit_entry.credits_in_use, 0)
+
+    def test_add_credits_bulk_credits_api_credits_regular_user(self):
+        """
+        Tests a regular user cannot add credits
+        """
+        self.client.force_authenticate(user=self.regular_user)
+        url = reverse('payments-add-credits')
+        data = {
+            "username": "regular_user",
+            "num_credits": 500,
+            "bulk_credits": 100,
+            "api_credits": 100,
         }
         response = self.client.post(url, data, format='json')
 
