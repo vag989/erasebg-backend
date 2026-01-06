@@ -198,3 +198,58 @@ class AddCreditsTests(APITestCase):
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_add_multiple_credits_admin(self):
+        """
+        Test an amdin can add mutlipe credits to a user
+        """
+
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('payments-add-credits')
+        data = {
+            "username": "regular_user",
+            "num_credits": 500,
+            "bulk_credits": 100,
+            "api_credits": 100,
+        }
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["success"], True)
+
+        credit_entry = Credits.objects.filter(user=self.regular_user)[0]
+        self.assertEqual(credit_entry.credits, 500)
+        self.assertEqual(credit_entry.credits_in_use, 0)
+
+        bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)[0]
+        self.assertEqual(bulk_credit_entry.credits, 100)
+        self.assertEqual(bulk_credit_entry.credits_in_use, 0)
+
+        api_credit_entry = APICredits.objects.filter(user=self.regular_user)[0]
+        self.assertEqual(api_credit_entry.credits, 100)
+        self.assertEqual(api_credit_entry.credits_in_use, 0)
+
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('payments-add-credits')
+        data = {
+            "username": "regular_user",
+            "num_credits": 300,
+            "api_credits": 200,
+        }
+
+        response = self.client.post(url, data, format='json')
+
+        credit_entries = Credits.objects.filter(user=self.regular_user)
+        bulk_credit_entries = BulkCredits.objects.filter(user=self.regular_user)
+        api_credit_entries = APICredits.objects.filter(user=self.regular_user)
+
+        self.assertEqual(credit_entries.count(), 2)
+        self.assertEqual(credit_entries[1].credits, 300)
+        self.assertEqual(credit_entries[1].credits_in_use, 0)
+
+        self.assertEqual(bulk_credit_entries.count(), 1)
+        
+        self.assertEqual(api_credit_entries.count(), 2)
+        self.assertEqual(api_credit_entries[1].credits, 200)
+        self.assertEqual(api_credit_entries[1].credits_in_use, 0)

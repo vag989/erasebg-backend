@@ -53,32 +53,24 @@ class AddCreditsView(APIView):
 
         try:
             user = CustomUser.objects.get(username=username)
-            credit = Credits.objects.create(user=user, credits=num_credits)
+            Credits.objects.create(user=user, credits=num_credits)
 
             if bulk_credits:
-                bulk_credit = BulkCredits.objects.create(user=user, credits=bulk_credits)
+                BulkCredits.objects.create(user=user, credits=bulk_credits)
             if api_credits:
-                api_credit = APICredits.objects.create(user=user, credits=api_credits)
-
-            if credit:
-                return Response(
-                    {
-                        "message": MESSAGES["CREDITS_ADDED"],
-                        "num_credits": num_credits,
-                        "bulk_credits": bulk_credits,
-                        "api_credits": api_credits,
-                        "success": True,
-                    },
-                        status=status.HTTP_200_OK
-                )
+                APICredits.objects.create(user=user, credits=api_credits)
 
             return Response(
                 {
-                    "message": MESSAGES["CREDITS_ADD_FAILED"],
-                    "success": False,
+                    "message": MESSAGES["CREDITS_ADDED"],
+                    "num_credits": num_credits,
+                    "bulk_credits": bulk_credits,
+                    "api_credits": api_credits,
+                    "success": True,
                 },
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    status=status.HTTP_200_OK
             )
+        
         except Exception as e:
             return Response(
                 {
