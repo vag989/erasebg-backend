@@ -2,6 +2,8 @@ from django.urls import reverse
 from django.db.models import F
 from django.utils import timezone
 
+from datetime import timedelta
+
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -671,11 +673,11 @@ class UserCreditsTests(APITestCase):
         url = reverse("user-login")
         cls.login_res = cls.client.post(url, cls.credentials, format="json")
 
-    def setup_multiple_credit_entries(self, model):
+    def setup_multiple_credit_entries(self, model, delete_existing=True):
         """
         Sets up multiple credit entries in given model
         """
-        model.objects.all().delete()
+        if delete_existing: model.objects.all().delete()
         entries = [700, 800, 600]
 
         for entry in entries:
@@ -886,6 +888,117 @@ class UserCreditsTests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
+    def test_expired_credits_not_fetched(self):
+        """
+        Test that expired credits are not fetched
+        """
+        self.credits.expires = timezone.now() - timedelta(minutes=5)
+        self.credits.save(update_fields=['expires'])
+
+        url = reverse("user-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertEqual(response.data["success"], False)
+
+    def test_expired_bulk_credits_not_fetched(self):
+        """
+        Test that expired bulk credits are not fetched
+        """
+        self.bulk_credits.expires = timezone.now() - timedelta(minutes=5)
+        self.bulk_credits.save(update_fields=['expires'])
+
+        url = reverse("user-bulk-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertEqual(response.data["success"], False)
+
+    def test_expired_api_credits_not_fetched(self):
+        """
+        Test that expired api credits are not fetched
+        """
+        self.api_credits.expires = timezone.now() - timedelta(minutes=5)
+        self.api_credits.save(update_fields=['expires'])
+
+        url = reverse("user-api-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertEqual(response.data["success"], False)
+
+    def test_expired_credits_with_multiple_credits(self):
+        """
+        Tests that expired credits are not fetched
+        when having multiple entries
+        """
+        self.credits.expires = timezone.now() - timedelta(minutes=5)
+        self.credits.save(update_fields=['expires'])
+
+        credits_entries = self.setup_multiple_credit_entries(Credits, False)
+
+        url = reverse("user-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), len(credits_entries))
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
+    def test_expired_bulk_credits_with_multiple_credits(self):
+        """
+        Tests that expired bulk credits are not fetched
+        when having multiple entries
+        """
+        self.bulk_credits.expires = timezone.now() - timedelta(minutes=5)
+        self.bulk_credits.save(update_fields=['expires'])
+
+        credits_entries = self.setup_multiple_credit_entries(BulkCredits, False)
+
+        url = reverse("user-bulk-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), len(credits_entries))
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
+    def test_expired_api_credits_with_multiple_credits(self):
+        """
+        Tests that expired api credits are not fetched
+        when having multiple entries
+        """
+        self.api_credits.expires = timezone.now() - timedelta(minutes=5)
+        self.api_credits.save(update_fields=['expires'])
+
+        credits_entries = self.setup_multiple_credit_entries(APICredits, False)
+
+        url = reverse("user-api-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), len(credits_entries))
 
         for i, credit in enumerate(credits_entries):
             self.assertEqual(response.data[i]["username"], self.credentials["username"])

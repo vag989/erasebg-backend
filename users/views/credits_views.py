@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,6 +19,7 @@ class CreditsView(APIView):
     """
     View to manage credits
     """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTCookieAuthentication]
 
@@ -31,30 +34,31 @@ class CreditsView(APIView):
     def get(self, request, *args, **kwargs):
         """
         Handles GET request to retrieve
-        credits for a user 
+        credits for a user
         """
         user = request.user
 
-        credits = user.credits.all().order_by('created')
+        credits = user.credits.filter(expires__gt=timezone.now()).order_by("created")
 
         if not credits.exists():
             return Response(
                 {
                     "message": MESSAGES["CREDITS_UNAVAILABLE"],
-                    "success": False, 
+                    "success": False,
                 },
-                    status=status.HTTP_402_PAYMENT_REQUIRED
+                status=status.HTTP_402_PAYMENT_REQUIRED,
             )
-        
+
         serializer = CreditsSerializer(credits, many=True)
 
-        return  Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class BulkCreditsView(APIView):
     """
     View to manage bulk credits
     """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTCookieAuthentication]
 
@@ -68,31 +72,34 @@ class BulkCreditsView(APIView):
 
     def get(self, request, *args, **kwargs):
         """
-        Handles GET request to retrieve 
-        bulk credits for a user 
+        Handles GET request to retrieve
+        bulk credits for a user
         """
         user = request.user
 
-        credits = user.bulk_credits.all().order_by('created')
+        credits = user.bulk_credits.filter(expires__gt=timezone.now()).order_by(
+            "created"
+        )
 
         if not credits.exists():
             return Response(
                 {
                     "message": MESSAGES["CREDITS_UNAVAILABLE"],
-                    "success": False, 
+                    "success": False,
                 },
-                    status=status.HTTP_402_PAYMENT_REQUIRED
+                status=status.HTTP_402_PAYMENT_REQUIRED,
             )
-        
+
         serializer = CreditsSerializer(credits, many=True)
 
-        return  Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class APICreditsView(APIView):
     """
     View to manage API credits
     """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTCookieAuthentication]
 
@@ -107,21 +114,23 @@ class APICreditsView(APIView):
     def get(self, request, *args, **kwargs):
         """
         Handles GET request to retrieve API
-        credits for a user 
+        credits for a user
         """
         user = request.user
 
-        credits = user.api_credits.all().order_by('created')
+        credits = user.api_credits.filter(expires__gt=timezone.now()).order_by(
+            "created"
+        )
 
         if not credits.exists():
             return Response(
                 {
                     "message": MESSAGES["CREDITS_UNAVAILABLE"],
-                    "success": False, 
+                    "success": False,
                 },
-                    status=status.HTTP_402_PAYMENT_REQUIRED
+                status=status.HTTP_402_PAYMENT_REQUIRED,
             )
-        
+
         serializer = CreditsSerializer(credits, many=True)
 
-        return  Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
