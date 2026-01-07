@@ -1006,6 +1006,120 @@ class UserCreditsTests(APITestCase):
             self.assertIn("created", response.data[i])
             self.assertIn("expires", response.data[i])
 
+    def test_get_credits_zero_credits(self):
+        """
+        Tests that credit entry with zero credits
+        is not fetched
+        """
+        self.credits.credits = 0
+        self.credits.save(update_fields=['credits'])
+
+        url = reverse("user-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertEqual(response.data["success"], False)
+
+    def test_get_bulk_credits_zero_credits(self):
+        """
+        Tests that bulk credit entry with zero credits
+        is not fetched
+        """
+        self.bulk_credits.credits = 0
+        self.bulk_credits.save(update_fields=['credits'])
+
+        url = reverse("user-bulk-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertEqual(response.data["success"], False)
+
+    def test_get_api_credits_zero_credits(self):
+        """
+        Tests that api credit entry with zero credits
+        is not fetched
+        """
+        self.api_credits.credits = 0
+        self.api_credits.save(update_fields=['credits'])
+
+        url = reverse("user-api-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertEqual(response.data["success"], False)
+
+    def test_get_credits_multiple_entries_with_zero_credits(self):
+        """
+        Tests that multiple credit entries are fetched
+        correctly with a zero credit entry ommitted
+        """
+        self.credits.credits = 0
+        self.credits.save(update_fields=['credits'])
+
+        credits_entries = self.setup_multiple_credit_entries(Credits, False)
+
+        url = reverse("user-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), len(credits_entries))
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
+    def test_get_bulk_credits_multiple_entries_with_zero_credits(self):
+        """
+        Tests that multiple bulk credit entries are fetched
+        correctly with a zero credit entry ommitted
+        """
+        self.bulk_credits.credits = 0
+        self.bulk_credits.save(update_fields=['credits'])
+
+        credits_entries = self.setup_multiple_credit_entries(BulkCredits, False)
+
+        url = reverse("user-bulk-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), len(credits_entries))
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
+    def test_get_api_credits_multiple_entries_with_zero_credits(self):
+        """
+        Tests that multiple api credit entries are fetched
+        correctly with a zero credit entry ommitted
+        """
+        self.api_credits.credits = 0
+        self.api_credits.save(update_fields=['credits'])
+
+        credits_entries = self.setup_multiple_credit_entries(APICredits, False)
+
+        url = reverse("user-api-credits")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), len(credits_entries))
+
+        for i, credit in enumerate(credits_entries):
+            self.assertEqual(response.data[i]["username"], self.credentials["username"])
+            self.assertEqual(response.data[i]["credits"], credit)
+            self.assertIn("created", response.data[i])
+            self.assertIn("expires", response.data[i])
+
 
 class GetOTPViewTests(APITestCase):
     """

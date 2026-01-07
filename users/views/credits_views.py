@@ -38,7 +38,9 @@ class CreditsView(APIView):
         """
         user = request.user
 
-        credits = user.credits.filter(expires__gt=timezone.now()).order_by("created")
+        credits = user.credits.filter(
+            credits__gt=0, expires__gt=timezone.now()
+        ).order_by("created")
 
         if not credits.exists():
             return Response(
@@ -77,9 +79,9 @@ class BulkCreditsView(APIView):
         """
         user = request.user
 
-        credits = user.bulk_credits.filter(expires__gt=timezone.now()).order_by(
-            "created"
-        )
+        credits = user.bulk_credits.filter(
+            credits__gt=0, expires__gt=timezone.now()
+        ).order_by("created")
 
         if not credits.exists():
             return Response(
@@ -118,9 +120,9 @@ class APICreditsView(APIView):
         """
         user = request.user
 
-        credits = user.api_credits.filter(expires__gt=timezone.now()).order_by(
-            "created"
-        )
+        credits = user.api_credits.filter(
+            credits__gt=0, expires__gt=timezone.now()
+        ).order_by("created")
 
         if not credits.exists():
             return Response(
