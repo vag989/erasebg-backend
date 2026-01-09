@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle, AnonRateThrottle
 
 # from users.models import APIToken
-from users.models import CustomUser, APIToken, EmailVerificationTokens
+from users.models import CustomUser, APIKey, EmailVerificationTokens
 from users.serializers import UserSerializer, UserEmailVerificationSerializer, RequestVerificationEmailResendSerializer
 from users.utils.resend import send_verification_email
 
@@ -34,7 +34,7 @@ class UserSignUpView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            APIToken.objects.create(user=serializer.instance)
+            APIKey.objects.create(user=serializer.instance)
             EmailVerificationTokens.objects.create(user=serializer.instance)
 
             if not DEBUG:

@@ -41,7 +41,7 @@ def get_otp():
     return str(randint(1000, 999999)).zfill(OTP_LENGTH)
 
 
-class APIToken(models.Model):
+class APIKey(models.Model):
     """
     Model for user associated API Token
     """

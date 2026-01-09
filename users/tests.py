@@ -9,7 +9,7 @@ from rest_framework import status
 
 from users.models import (
     CustomUser,
-    APIToken,
+    APIKey,
     Credits,
     BulkCredits,
     APICredits,
@@ -33,7 +33,7 @@ class UsersTests(APITestCase):
             email="testuser@example.com",
         )
 
-        APIToken.objects.create(user=cls.user)
+        APIKey.objects.create(user=cls.user)
         EmailVerificationTokens.objects.create(user=cls.user, verified=True)
 
     @classmethod
@@ -206,7 +206,7 @@ class UsersTests(APITestCase):
         """
         Tests create or fetch API token does not exist
         """
-        APIToken.objects.filter(user=self.user).delete()
+        APIKey.objects.filter(user=self.user).delete()
 
         url = reverse('user-api-token')
         response = self.client.post(url, format='json')
@@ -648,7 +648,7 @@ class UserCreditsTests(APITestCase):
             username="testuser", email="testuser@example.com", password="Testuser123"
         )
 
-        APIToken.objects.create(user=cls.user)
+        APIKey.objects.create(user=cls.user)
         EmailVerificationTokens.objects.create(user=cls.user, verified=True)
 
         cls.num_credits = 100

@@ -7,7 +7,7 @@ from rest_framework.throttling import ScopedRateThrottle, AnonRateThrottle
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
-from users.models import APIToken
+from users.models import APIKey
 from users.authentication import JWTCookieAuthentication
 
 from erasebg.settings import DEBUG, COOKIE_SETTINGS, WORKER_COOKIE_SETTINGS
@@ -107,7 +107,7 @@ class APITokenView(APIView):
         user = request.user
 
         try:
-            token, created = APIToken.objects.get_or_create(user=user)
+            token, created = APIKey.objects.get_or_create(user=user)
             if created:
                 return Response(
                     {
