@@ -69,8 +69,7 @@ class Credits(models.Model):
     user = models.ForeignKey(
         AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="credits"
     )
-    credits = models.PositiveIntegerField(null=False)
-    credits_in_use = models.PositiveIntegerField(default=0)
+    credits = models.IntegerField(null=False)
     created = models.DateTimeField(auto_now_add=True)
     expires = models.DateTimeField(default=get_credit_expiry_datetime)
 
@@ -93,8 +92,7 @@ class BulkCredits(models.Model):
     user = models.ForeignKey(
         AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bulk_credits"
     )
-    credits = models.PositiveIntegerField(null=False)
-    credits_in_use = models.PositiveIntegerField(default=0)
+    credits = models.IntegerField(null=False)
     created = models.DateTimeField(auto_now_add=True)
     expires = models.DateTimeField(default=get_credit_expiry_datetime)
 
@@ -117,8 +115,7 @@ class APICredits(models.Model):
     user = models.ForeignKey(
         AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="api_credits"
     )
-    credits = models.PositiveIntegerField(null=False)
-    credits_in_use = models.PositiveIntegerField(default=0)
+    credits = models.IntegerField(null=False)
     created = models.DateTimeField(auto_now_add=True)
     expires = models.DateTimeField(default=get_credit_expiry_datetime)
 
