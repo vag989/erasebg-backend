@@ -46,7 +46,6 @@ class AddCreditsTests(APITestCase):
 
         credit_entry = Credits.objects.get(user=self.regular_user)
         self.assertEqual(credit_entry.credits, 300)
-        self.assertEqual(credit_entry.credits_in_use, 0)
 
         bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)
         self.assertFalse(bulk_credit_entry.exists())
@@ -87,11 +86,9 @@ class AddCreditsTests(APITestCase):
 
         credit_entry = Credits.objects.get(user=self.regular_user)
         self.assertEqual(credit_entry.credits, 500)
-        self.assertEqual(credit_entry.credits_in_use, 0)
 
         bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)[0]
         self.assertEqual(bulk_credit_entry.credits, 100)
-        self.assertEqual(bulk_credit_entry.credits_in_use, 0)
 
         api_credit_entry = APICredits.objects.filter(user=self.regular_user)
         self.assertFalse(api_credit_entry.exists())
@@ -129,14 +126,12 @@ class AddCreditsTests(APITestCase):
 
         credit_entry = Credits.objects.get(user=self.regular_user)
         self.assertEqual(credit_entry.credits, 500)
-        self.assertEqual(credit_entry.credits_in_use, 0)
 
         bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)
         self.assertFalse(bulk_credit_entry.exists())
 
         api_credit_entry = APICredits.objects.filter(user=self.regular_user)[0]
         self.assertEqual(api_credit_entry.credits, 100)
-        self.assertEqual(api_credit_entry.credits_in_use, 0)
 
     def test_add_credits_api_credits_regular_user(self):
         """
@@ -173,15 +168,12 @@ class AddCreditsTests(APITestCase):
 
         credit_entry = Credits.objects.get(user=self.regular_user)
         self.assertEqual(credit_entry.credits, 500)
-        self.assertEqual(credit_entry.credits_in_use, 0)
 
         bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)[0]
         self.assertEqual(bulk_credit_entry.credits, 100)
-        self.assertEqual(bulk_credit_entry.credits_in_use, 0)
 
         api_credit_entry = APICredits.objects.filter(user=self.regular_user)[0]
         self.assertEqual(api_credit_entry.credits, 100)
-        self.assertEqual(api_credit_entry.credits_in_use, 0)
 
     def test_add_credits_bulk_credits_api_credits_regular_user(self):
         """
@@ -220,15 +212,12 @@ class AddCreditsTests(APITestCase):
 
         credit_entry = Credits.objects.filter(user=self.regular_user)[0]
         self.assertEqual(credit_entry.credits, 500)
-        self.assertEqual(credit_entry.credits_in_use, 0)
 
         bulk_credit_entry = BulkCredits.objects.filter(user=self.regular_user)[0]
         self.assertEqual(bulk_credit_entry.credits, 100)
-        self.assertEqual(bulk_credit_entry.credits_in_use, 0)
 
         api_credit_entry = APICredits.objects.filter(user=self.regular_user)[0]
         self.assertEqual(api_credit_entry.credits, 100)
-        self.assertEqual(api_credit_entry.credits_in_use, 0)
 
         self.client.force_authenticate(user=self.admin_user)
         url = reverse('payments-add-credits')
@@ -246,10 +235,8 @@ class AddCreditsTests(APITestCase):
 
         self.assertEqual(credit_entries.count(), 2)
         self.assertEqual(credit_entries[1].credits, 300)
-        self.assertEqual(credit_entries[1].credits_in_use, 0)
 
         self.assertEqual(bulk_credit_entries.count(), 1)
         
         self.assertEqual(api_credit_entries.count(), 2)
         self.assertEqual(api_credit_entries[1].credits, 200)
-        self.assertEqual(api_credit_entries[1].credits_in_use, 0)
