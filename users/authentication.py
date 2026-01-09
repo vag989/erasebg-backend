@@ -65,7 +65,7 @@ class APIKeyAuthentication(BaseAuthentication):
         if not api_key_entry:
             raise KeyError("API Key does not exist")
         
-        user = CustomUser.objects.filter(pk=api_key_entry.user_id)
+        user = CustomUser.objects.filter(pk=api_key_entry.user_id).first()
 
         # Assuming on_delete=Models.CASCADE is not 
         # set on APIKey model user one-to-one relation field and
