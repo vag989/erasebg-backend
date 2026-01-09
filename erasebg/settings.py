@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
-
-from decouple import Config, RepositoryEnv, Csv
 import os
+
+from pathlib import Path
+from decouple import Config, RepositoryEnv, Csv
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +33,10 @@ SECRET_KEY = config("SECRET_KEY")
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', cast=Csv())
 DJANGO_ENV = config('DJANGO_ENV', default='development')
 
-REPLICATE_API_TOKEN = config("REPLICATE_API_TOKEN")
+CLOUDFLARE_WORKER_ID = config("CLOUDFLARE_WORKER_ID")
+CLOUDFLARE_WORKER_SHARED_SECRET = config("CLOUDFLARE_WORKER_SHARED_SECRET")
+
+RESEND_API_KEY = config("RESEND_API_KEY")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -46,13 +50,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third party apps
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    # local apps
     'users',
     'infer',
     'payments',
-    # other apps
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -66,10 +72,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# csrf token related
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_HTTPONLY = False      # MUST be False because JS needs to read it
+CSRF_COOKIE_SECURE = True   
+
 # OR allow specific origins
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    cast=lambda v: [s.strip() for s in v.split(',')],
+    cast=Csv(),
     default=['http://localhost:5173', 'http://127.0.0.1:5173']
 )
 
@@ -90,21 +102,6 @@ TEMPLATES = [
     },
 ]
 
-# DRF settings for Authentication
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Use JWT authentication
-        # 'rest_framework.authentication.TokenAuthentication',  # Alternatively for simple token
-    ],
-
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.MultiPartParser',  # To handle multipart form data (including files)
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-    ],
-}
-
-
 WSGI_APPLICATION = 'erasebg.wsgi.application'
 
 # Database
@@ -116,17 +113,18 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # },
     'default': {
-        'ENGINE': config('DB_ENGINE'),
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': config('DB_NAME', default='erasebg_backend_db'),
+        'USER': config('DB_USER', default='erasebg_backend'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
+        'TEST': {
+            'NAME': config('TEST_DB_NAME', default='test_erasebg_backend_db'),
+            'MIRROR': None,
+        }
     },
 }
-
-# Timeout in case of database lock (in seconds)
-DB_LOCK_WAIT_TIMEOUT = 2
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -148,6 +146,45 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# DRF settings for Authentication
+REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": config("ANONYMOUS_THROTTLE_RATE", default="1000/day"),
+        "login": config("LOGIN_THROTTLE_RATE", default="10/minute"),
+        "logout": config("LOGOUT_THROTTLE_RATE", default="10/minute"),
+        "signup": config("SIGNUP_THROTTLE_RATE", default="10/hour"),
+        "resend_verification_email": config("RESEND_VERIFICATION_EMAIL_THROTTLE_RATE", default="1/day"),
+        "email_verification": config("EMAIL_VERIFICATION_THROTTLE_RATE", default="5/hour"),
+        "refresh_access_token": config("REFRESH_ACCESS_TOKEN_THROTTLE_RATE", default="15/hour"),
+        "add_credits": config("ADD_CREDITS_THROTTLE_RATE", default="10/minute"),
+        "add_bulk_credits": config("ADD_BULK_CREDITS_THROTTLE_RATE", default="10/minute"),
+        "add_api_credits": config("ADD_API_CREDITS_THROTTLE_RATE", default="10/minute"),
+        "fetch_user_details": config("FETCH_USER_DETAILS_THROTTLE_RATE", default="60/minute"),
+        "update_user_details": config("UPDATE_USER_DETAILS_THROTTLE_RATE", default="10/minute"),
+        "fetch_credits": config("FETCH_CREDITS", default="60/hour"),
+        "fetch_bulk_credits": config("FETCH_BULK_CREDITS", default="60/hour"),
+        "fetch_api_credits": config("FETCH_API_CREDITS", default="60/hour"),
+        "initiate_inference_worker": config("INITIATE_INFERENCE_WORKER_THROTTLE_RATE", default="120/minute"),
+        "initiate_bulk_inference_worker": config("INITIATE_BULK_INFERENCE_WORKER_THROTTLE_RATE", default="120/minute"),
+        "initiate_api_inferece_worker": config("INITIATE_API_INFERENCE_WORKER_THROTTLE_RATE", default="600/minute"),
+        "wrapup_inference_worker": config("WRAPUP_INFERENCE_WORKER_THROTTLE_RATE", default="120/minute"),
+        "wrapup_bulk_inference_worker": config("WRAPUP_BULK_INFERENCE_WORKER_THROTTLE_RATE", default="120/minute"),
+        "wrapup_api_inference_worker": config("WRAPUP_API_INFERENCE_WORKER_THROTTLE_RATE", default="600/minute"),
+    }
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        seconds=config("ACCESS_TOKEN_LIFETIME", default=900, cast=int)
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        seconds=config("REFRESH_TOKEN_LIFETIME", default=604800, cast=int)
+    ),
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -165,6 +202,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -174,17 +212,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cookies related
 
 COOKIE_SETTINGS = {
-    "ACCESS_TOKEN_VALIDITY": 3600,
-    "REFRESH_TOEKN_VALIDITY": 86400,
+    "DOMAIN": config("COOKIE_DOMAIN", default="localhost:5173"),
+    "ACCESS_TOKEN_VALIDITY": config("ACCESS_TOKEN_VALIDITY", default=3600, cast=int),
+    "REFRESH_TOKEN_VALIDITY": config("REFRESH_TOKEN_VALIDITY", default=3600, cast=int),
     "HTTP_ONLY": config('COOKIE_HTTP_ONLY', default=True, cast=bool),
     "SECURE_COOKIE": config('COOKIE_SECURE', default=True, cast=bool),
     "SAME_SITE": config('COOKIE_SAMESITE', default='strict'),
 }
 
 WORKER_COOKIE_SETTINGS = {
-    "DOMAIN": "simple-worker.louiskumarmathew.workers.dev",
-    "ACCESS_TOKEN_VALIDITY": 3600,
-    "HTTP_ONLY": config('COOKIE_HTTP_ONLY', default=True, cast=bool),
-    "SECURE_COOKIE": config('COOKIE_SECURE', default=True, cast=bool),
-    "SAME_SITE": "None",
+    # ToDo[dev, production]: change the domain accordingly
+    "DOMAIN": config("WORKER_DOMAIN", default="localhost:5173"),
+    "ACCESS_TOKEN_VALIDITY": config("ACCESS_TOKEN_VALIDITY", default=3600, cast=int),
+    "HTTP_ONLY": config("COOKIE_HTTP_ONLY", default=True, cast=bool),
+    "SECURE_COOKIE": config("COOKIE_SECURE", default=True, cast=bool),
+    "SAME_SITE": config("COOKIE_SAMESITE", default="strict"),
 }
+
+# Emails
+NOTIFICATIONS_EMAIL_ID = config("NOTIFICATIONS_EMAIL_ID", default="no-reply@notifications.erasebg.co")
