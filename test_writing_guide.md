@@ -1,0 +1,4 @@
+- Test auth
+- Test success (Each success return)
+- Test Fail    (Each Fail return )
+- Include test for each database query condition used to filter
