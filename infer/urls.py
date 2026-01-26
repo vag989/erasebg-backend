@@ -6,7 +6,7 @@ from rest_framework.urls import path
 # from infer.views.replicate_views import EraseBGCreatePredicitonView, PollPredictionView, FetchOutputView
 from infer.views.credits_views import (
     InitiateInferenceWorkerView,
-    InititateBulkInferenceWorkerView,
+    InitiateBulkInferenceWorkerView,
     InitiateAPIInferenceWorkerView,
     WrapUpInferenceWorkerView,
     WrapUpBulkInferenceWorkerView,
@@ -27,7 +27,7 @@ urlpatterns = [
     ),
     path(
         "infer/initiate-bulk-inference/",
-        InititateBulkInferenceWorkerView.as_view(),
+        InitiateBulkInferenceWorkerView.as_view(),
         name="infer-initiate-bulk-inference",
     ),
     path(

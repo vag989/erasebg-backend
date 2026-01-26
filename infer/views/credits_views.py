@@ -106,7 +106,7 @@ class InitiateInferenceWorkerView(APIView):
         )
 
 
-class InititateBulkInferenceWorkerView(APIView):
+class InitiateBulkInferenceWorkerView(APIView):
     """
     View to check Bulk credits and allow
     inititation of inference
