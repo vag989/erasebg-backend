@@ -21,32 +21,32 @@ urlpatterns = [
     #     path('removebg/fetch-output', FetchOutputView.as_view(),
     #          name='removebg-fetch-output'),
     path(
-        "infer/initiate-inference/",
+        "initiate-inference/",
         InitiateInferenceWorkerView.as_view(),
         name="infer-initiate-inference",
     ),
     path(
-        "infer/initiate-bulk-inference/",
+        "initiate-bulk-inference/",
         InitiateBulkInferenceWorkerView.as_view(),
         name="infer-initiate-bulk-inference",
     ),
     path(
-        "infer/initiate-api-inference/",
+        "initiate-api-inference/",
         InitiateAPIInferenceWorkerView.as_view(),
         name="infer-initiate-api-inference",
     ),
     path(
-        "infer/wrapup-inference/",
+        "wrapup-inference/",
         WrapUpInferenceWorkerView.as_view(),
         name="infer-wrapup-inference",
     ),
     path(
-        "infer/wrapup-bulk-inference/",
+        "wrapup-bulk-inference/",
         WrapUpBulkInferenceWorkerView.as_view(),
         name="infer-wrapup-bulk-inference",
     ),
     path(
-        "infer/wrapup-api-inference/",
+        "wrapup-api-inference/",
         WrapUpAPIInferenceWorkerView.as_view(),
         name="infer-wrapup-api-inference",
     )
