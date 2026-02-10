@@ -345,7 +345,7 @@ class WrapUpInferenceWorkerView(APIView):
                     "error": str(e),
                     "success": False,
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
 
@@ -447,7 +447,7 @@ class WrapUpBulkInferenceWorkerView(APIView):
                     "error": str(e),
                     "success": False,
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
 
@@ -547,5 +547,5 @@ class WrapUpAPIInferenceWorkerView(APIView):
                     "error": str(e),
                     "success": False,
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
