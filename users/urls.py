@@ -1,7 +1,5 @@
 from rest_framework.urls import path
 
-# from rest_framework_simplejwt.views import TokenRefreshView
-
 from users.views.signup_view import UserSignUpView, ResendVerificationEmail, UserEmailVerificationView
 from users.views.log_in_out_view import UserLoginView, UserLogoutView
 from users.views.auth_tokens_views import JWTTokenRefreshView, APITokenView
@@ -9,6 +7,10 @@ from users.views.credits_views import CreditsView, BulkCreditsView, APICreditsVi
 # from users.views import UserLoginView, TokenRefreshView, GenerateAPITokenView
 from users.views.user_details import UserDetailsView, UpdateDetailsView
 from users.views.reset_password import GetOTPView, VerifyOTPView, UpdatePasswordView
+
+from users.views.helpers.verificaiton_otp_views import GetOTPHelperView, GetVerificationLinkHelperView
+
+from erasebg.settings import DEBUG
 
 urlpatterns = [
     path('signup/', UserSignUpView.as_view(), name='user-signup'),
@@ -27,3 +29,9 @@ urlpatterns = [
     path('verify-email/', UserEmailVerificationView.as_view(), name='user-email-verification'),
     path('logout/', UserLogoutView.as_view(), name='user-logout'),
 ]
+
+if DEBUG:
+    urlpatterns += [
+        path('helpers/email-verification-token/', GetVerificationLinkHelperView.as_view(), name='user-email-verification-token'),
+        path('helpers/password-reset-otp/', GetOTPHelperView.as_view(), name='user-get-otp')
+    ] 

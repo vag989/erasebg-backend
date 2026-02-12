@@ -8,7 +8,7 @@ def send_verification_email(to_email: str, verification_token: str):
     """
     Send verification email using Resend
     """
-    verification_link = f"https://footprintai.net/api/users/verify-email/?verification_token={verification_token}&email={to_email}"
+    verification_link = f"https://erasebg.co/api/users/verify-email/?verification_token={verification_token}&email={to_email}"
     html_body = get_verfication_email_content(verification_link)
 
     send_email(
