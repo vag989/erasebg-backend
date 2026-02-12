@@ -51,12 +51,6 @@ class GetOTPHelperView(APIView):
                 PasswordResetOTP.objects.filter(user=user).delete()
                 PasswordResetOTP.objects.create(user=user)
 
-            if not DEBUG:
-                send_password_reset_otp(
-                    to_email=email,
-                    otp=user.password_reset_otp.otp,
-                )
-
             return Response(
                 {
                     "otp": user.password_reset_otp.otp,
