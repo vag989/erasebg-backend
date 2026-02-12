@@ -8,7 +8,7 @@ from users.views.credits_views import CreditsView, BulkCreditsView, APICreditsVi
 from users.views.user_details import UserDetailsView, UpdateDetailsView
 from users.views.reset_password import GetOTPView, VerifyOTPView, UpdatePasswordView
 
-from users.views.helpers.verificaiton_otp_views import GetOTPHelperView, GetVerificationLinkHelperView
+from users.views.helpers.verificaiton_token_otp_views import GetOTPHelperView, GetVerificationLinkHelperView
 
 from erasebg.settings import DEBUG
 
