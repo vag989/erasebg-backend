@@ -9,6 +9,7 @@ from users.views.user_details import UserDetailsView, UpdateDetailsView
 from users.views.reset_password import GetOTPView, VerifyOTPView, UpdatePasswordView
 
 from users.views.helpers.verificaiton_token_otp_views import GetOTPHelperView, GetVerificationLinkHelperView
+from users.views.helpers.access_token_views import AccessTokenHelperView
 
 from erasebg.settings import DEBUG
 
@@ -32,6 +33,7 @@ urlpatterns = [
 
 if DEBUG:
     urlpatterns += [
-        path('helpers/email-verification-token/', GetVerificationLinkHelperView.as_view(), name='user-email-verification-token'),
-        path('helpers/password-reset-otp/', GetOTPHelperView.as_view(), name='user-get-otp')
-    ] 
+        path('helpers/email-verification-token/', GetVerificationLinkHelperView.as_view(), name='user-email-verification-token-helper'),
+        path('helpers/password-reset-otp/', GetOTPHelperView.as_view(), name='user-get-otp-helper'),
+        path('helpers/access-token/', AccessTokenHelperView.as_view(), name='user-access-token-view-helper')
+    ]
