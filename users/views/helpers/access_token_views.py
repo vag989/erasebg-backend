@@ -47,5 +47,5 @@ class AccessTokenHelperView(APIView):
                 "access_token": str(refresh.access_token),
                 "success": True,
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_200_OK
         )
