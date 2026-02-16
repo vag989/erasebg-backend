@@ -53,7 +53,7 @@ class GetOTPHelperView(APIView):
 
             return Response(
                 {
-                    "otp": user.password_reset_otp.otp,
+                    "otp": user.password_reset_otp.otp if DEBUG else '123456',
                     "success": True,
                 },
                 status=status.HTTP_200_OK,
@@ -116,7 +116,7 @@ class GetVerificationLinkHelperView(APIView):
 
         return Response(
             {
-                "verification_token": verification_token,
+                "verification_token": verification_token if DEBUG else "corrupted_token",
                 "success": True,
             },
             status=status.HTTP_200_OK,
