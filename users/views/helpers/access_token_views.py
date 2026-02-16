@@ -46,7 +46,7 @@ class AccessTokenHelperView(APIView):
         
         return Response(
             {
-                "access_token": str(refresh.access_token) if DEGUB else "corrupted_token",
+                "access_token": str(refresh.access_token) if DEBUG else "corrupted_token",
                 "success": True,
             },
             status=status.HTTP_200_OK
