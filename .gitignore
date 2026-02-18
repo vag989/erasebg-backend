@@ -2,6 +2,9 @@
 .venv/
 .python-version
 
+# claude locla settings
+.claude
+
 # Environment variables
 .env
 .env.production
