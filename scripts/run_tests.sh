@@ -1,4 +1,6 @@
-export DJANGO_ENV="dev"
+OLD_ENV=$DJANGO_ENV
+
+export DJANGO_ENV="local"
 
 echo "DJANGO_ENV set to:" $DJANGO_ENV
 
@@ -11,6 +13,6 @@ python manage.py test payments --keepdb
 echo "Running tests for users"
 python manage.py test users --keepdb
 
-export DJANGO_ENV="production"
+export DJANGO_ENV=$OLD_ENV
 
 echo "DJANGO_ENV set to:" $DJANGO_ENV
