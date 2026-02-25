@@ -21,7 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Determine which file to load
 # ToDo add DJANGO_ENV when running in production accordingly
-ENV_FILE = ".env.production" if os.getenv("DJANGO_ENV") == "production" else ".env"
+ENV_FILE = ".env" 
+
+if os.getenv("DJANGO_ENV") == "production":
+    ENV_FILE = ".env.production" 
+elif os.getenv("DJANGO_ENV") == "development":
+    ENV_FILE = ".env.dev"
 
 # Load the selected .env file
 config = Config(RepositoryEnv(ENV_FILE))
