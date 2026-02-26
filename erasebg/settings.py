@@ -28,6 +28,8 @@ if os.getenv("DJANGO_ENV") == "production":
 elif os.getenv("DJANGO_ENV") == "development":
     ENV_FILE = ".env.dev"
 
+print(f"Using ENV_FILE: {ENV_FILE}")
+
 # Load the selected .env file
 config = Config(RepositoryEnv(ENV_FILE))
 
@@ -120,13 +122,13 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': config('DB_NAME', default='erasebg_backend_db'),
+        'NAME': config('DB_NAME'),
         'USER': config('DB_USER', default='erasebg_backend'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
         'TEST': {
-            'NAME': config('TEST_DB_NAME', default='test_erasebg_backend_db'),
+            'NAME': config('TEST_DB_NAME'),
             'MIRROR': None,
         }
     },
