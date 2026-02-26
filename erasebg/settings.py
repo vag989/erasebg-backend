@@ -28,6 +28,8 @@ if os.getenv("DJANGO_ENV") == "production":
 elif os.getenv("DJANGO_ENV") == "development":
     ENV_FILE = ".env.dev"
 
+print(f"Using ENV_FILE: {ENV_FILE}")
+
 # Load the selected .env file
 config = Config(RepositoryEnv(ENV_FILE))
 
