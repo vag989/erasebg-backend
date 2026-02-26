@@ -1,4 +1,4 @@
 python manage.py collectstatic
 
 sudo systemctl daemon-reload
-sudo systemctl restart gunicorn-erasebg.service
+sudo systemctl restart gunicorn-erasebg-production.service
