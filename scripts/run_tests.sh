@@ -4,6 +4,10 @@ export DJANGO_ENV="local"
 
 echo "DJANGO_ENV set to:" $DJANGO_ENV
 
+echo "Running migrations"
+python manage.py makemigrations
+python manage.py migrate
+
 echo "Running tests for infer"
 python manage.py test infer --keepdb
 
