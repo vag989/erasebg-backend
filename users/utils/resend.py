@@ -1,6 +1,8 @@
 import resend
 
-from erasebg.settings import RESEND_API_KEY, NOTIFICATIONS_EMAIL_ID
+from typing import Union, List
+
+from erasebg.settings import ALLOWED_HOSTS, RESEND_API_KEY, NOTIFICATIONS_EMAIL_ID
 from erasebg.api.CONFIG import MESSAGES
 
 
@@ -8,7 +10,7 @@ def send_verification_email(to_email: str, verification_token: str):
     """
     Send verification email using Resend
     """
-    verification_link = f"https://erasebg.co/api/users/verify-email/?verification_token={verification_token}&email={to_email}"
+    verification_link = f"https://{ALLOWED_HOSTS[0]}/api/users/verify-email/?verification_token={verification_token}&email={to_email}"
     html_body = get_verfication_email_content(verification_link)
 
     send_email(
@@ -33,20 +35,33 @@ def send_password_reset_otp(to_email: str, otp: str):
     )
 
 
-def send_email(from_email: str, to_email: str, subject: str, html_body: str):
+def send_email(
+    from_email: str,
+    to_email: Union[str, List[str]],
+    subject: str,
+    html_body: str,
+):
     """
     Send email using Resend
     """
     resend.api_key = RESEND_API_KEY
 
+    # Ensure recipients is always a list
+    recipients = [to_email] if isinstance(to_email, str) else to_email
+
     params: resend.Emails.SendParams = {
-        "from": f"Auth <{from_email}>",
-        "to": [""],
+        "from": f"erasebg.co <{from_email}>",
+        "to": recipients,
         "subject": subject,
         "html": html_body,
     }
 
-    resend.Email.send(params)
+    try:
+        response = resend.Emails.send(params)
+        return response  # contains id, etc.
+    except Exception as e:
+        # log this in real app
+        raise RuntimeError(f"Failed to send email via Resend: {e}")
 
 
 def get_verfication_email_content(verification_link: str) -> str:
