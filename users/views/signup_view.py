@@ -146,11 +146,11 @@ class UserEmailVerificationView(APIView):
         """
         serializer = UserEmailVerificationSerializer(data=request.query_params)
 
-        location = f"{FRONTEND_URL}/html/email-verification-status"
+        location = f"{FRONTEND_URL}/html/email-verification-status.html"
 
         # 302 status code is what helps browser to redirect
         if not serializer.is_valid():
-            location += "?status=failure"
+            location += "?verified=false"
             return Response(
                 headers={"Location": location}, status=status.HTTP_302_FOUND
             )
@@ -161,11 +161,11 @@ class UserEmailVerificationView(APIView):
         user = CustomUser.objects.filter(email=email)[0]
 
         if verification_token == user.email_verification_token.verification_token:
-            location += "?status=success"
+            location += "?verified=true"
             user.email_verification_token.verified = True
             user.email_verification_token.save(update_fields=["verified"])
             status_code = status.HTTP_200_OK
         else :
-            location += "?status=failure"
+            location += "?verified=false"
 
         return Response(headers={"Location": location}, status=status.HTTP_302_FOUND)
