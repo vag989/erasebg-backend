@@ -9,7 +9,7 @@ from users.serializers import UserSerializer, UserEmailVerificationSerializer, R
 from users.utils.resend import send_verification_email
 
 from erasebg.api.CONFIG import MESSAGES
-from erasebg.settings import DEBUG
+from erasebg.settings import DEBUG, FRONTEND_URL
 
 from users.utils.resend import send_verification_email
 
@@ -146,7 +146,7 @@ class UserEmailVerificationView(APIView):
         """
         serializer = UserEmailVerificationSerializer(data=request.query_params)
 
-        location = "/html/email-verification-status"
+        location = f"{FRONTEND_URL}/html/email-verification-status"
 
         # 302 status code is what helps browser to redirect
         if not serializer.is_valid():

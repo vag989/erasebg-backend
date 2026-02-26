@@ -40,6 +40,9 @@ SECRET_KEY = config("SECRET_KEY")
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', cast=Csv())
 DJANGO_ENV = config('DJANGO_ENV', default='development')
 
+# frontend url settings
+FRONTEND_URL = config('FRONTEND_URL', default='https://localhost:5173')
+
 CLOUDFLARE_WORKER_ID = config("CLOUDFLARE_WORKER_ID")
 CLOUDFLARE_WORKER_SHARED_SECRET = config("CLOUDFLARE_WORKER_SHARED_SECRET")
 
