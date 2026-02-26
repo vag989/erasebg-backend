@@ -122,9 +122,9 @@ MESSAGES = {
     "PASSWORD_UPDATE_TOKEN_INVALID": "Password reset token is invalid",
 
     # Email templates
-    "EMAIL_VERIFICATION_SUBJECT": "FootprintAI - Verify your email address",
+    "EMAIL_VERIFICATION_SUBJECT": "erasebg.co - Verify your email address",
     "EMAIL_VERIFICATION_TEMPLATE": "Please clink on the following link to verify your email address: {verification_link} \n\n If you did not create an account, no further action is required.",
-    "EMAIL_OTP_SUBJECT": "FootprintAI - Your Password Reset OTP",
+    "EMAIL_OTP_SUBJECT": "erasebg.co - Your Password Reset OTP",
     "EMAIL_OTP_TEMPLATE": "Please use the following OTP to reset your password: {otp} \n\n If you did not request a password reset, no further action is required.",
     
     # Email Verification
