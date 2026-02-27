@@ -151,6 +151,7 @@ class VerifyOTPView(APIView):
                     key="password_update_token",
                     value=otp_entry.password_reset_token,
                     max_age=COOKIE_SETTINGS["ACCESS_TOKEN_VALIDITY"],
+                    domain=COOKIE_SETTINGS["DOMAIN"],
                     httponly=COOKIE_SETTINGS["HTTP_ONLY"],
                     secure=COOKIE_SETTINGS["SECURE_COOKIE"],
                     samesite=COOKIE_SETTINGS["SAME_SITE"],
