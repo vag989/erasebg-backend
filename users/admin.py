@@ -14,7 +14,8 @@ class APICreditsInline(admin.TabularInline):
     model = APICredits
     extra = 1
 
-class CustomuserAdmin(CustomUser):
+@admin.register(CustomUser)
+class CustomuserAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'is_superuser', 'is_staff', 'is_active', 'last_login', 'date_joined')
     search_fields = ('username', 'email')
     inlines = [CreditsInline, BulkCreditsInline, APICreditsInline]
