@@ -57,8 +57,8 @@ INSTALLED_APPS = [
     # 'django.contrib.admin',  # Requires session middleware
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    # 'django.contrib.sessions',
-    'django.contrib.messages',
+    # 'django.contrib.sessions',  # Not needed - using JWT
+    # 'django.contrib.messages',  # Not needed for API
     'django.contrib.staticfiles',
     'django_extensions',
     # third party apps
@@ -75,11 +75,11 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.security.SecurityMiddleware',
-    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',  # Not needed - using JWT
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',  # Not needed - DRF handles auth via JWTCookieAuthentication
+    # 'django.contrib.messages.middleware.MessageMiddleware',  # Requires sessions
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -112,8 +112,8 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                # 'django.contrib.auth.context_processors.auth',  # Requires AuthenticationMiddleware
+                # 'django.contrib.messages.context_processors.messages',  # Requires messages app
             ],
         },
     },
