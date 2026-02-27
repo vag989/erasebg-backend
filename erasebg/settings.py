@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    # 'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
@@ -75,7 +75,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -90,9 +90,9 @@ CSRF_COOKIE_SECURE   = config('CSRF_COOKIE_SECURE', default=True)
 CSRF_COOKIE_SAMESITE = config('CSRF_COOKIE_SAMESITE', default=None)  
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv())
 
-# session cookies
-SESSION_COOKIE_SAMESITE = config('SESSION_COOKIE_SAMESITE', default="None")
-SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True)
+# # session cookies
+# SESSION_COOKIE_SAMESITE = config('SESSION_COOKIE_SAMESITE', default="None")
+# SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True)
 
 # OR allow specific origins
 CORS_ALLOW_CREDENTIALS = True
