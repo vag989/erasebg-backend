@@ -54,7 +54,7 @@ RESEND_API_KEY = config("RESEND_API_KEY")
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',  # Requires session middleware
     'django.contrib.auth',
     'django.contrib.contenttypes',
     # 'django.contrib.sessions',
