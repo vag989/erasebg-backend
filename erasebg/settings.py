@@ -174,6 +174,7 @@ REST_FRAMEWORK = {
         "login": config("LOGIN_THROTTLE_RATE", default="10/minute"),
         "logout": config("LOGOUT_THROTTLE_RATE", default="10/minute"),
         "signup": config("SIGNUP_THROTTLE_RATE", default="10/hour"),
+        "fetch_api_token": config("FETCH_API_TOKEN", default="10/minute"),
         "resend_verification_email": config("RESEND_VERIFICATION_EMAIL_THROTTLE_RATE", default="1/day"),
         "email_verification": config("EMAIL_VERIFICATION_THROTTLE_RATE", default="5/hour"),
         "refresh_access_token": config("REFRESH_ACCESS_TOKEN_THROTTLE_RATE", default="15/hour"),

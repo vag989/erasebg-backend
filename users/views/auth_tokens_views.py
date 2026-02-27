@@ -99,6 +99,14 @@ class APITokenView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTCookieAuthentication]
 
+    def get_throttles(self):
+        if not DEBUG:
+            self.throttle_classes = [ScopedRateThrottle, AnonRateThrottle]
+            self.throttle_scope = "fetch_api_token"
+        else:
+            self.throttle_classes = []
+        return super().get_throttles()
+
     def post (self, request, *args, **kwargs):
         """
         Post request to generate an API token 
