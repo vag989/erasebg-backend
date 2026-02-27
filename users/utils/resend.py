@@ -30,7 +30,7 @@ def send_password_reset_otp(to_email: str, otp: str):
     send_email(
         NOTIFICATIONS_EMAIL_ID,
         to_email,
-        MESSAGES["PASSWORD_RESET_OTP_SUBJECT"],
+        MESSAGES["EMAIL_OTP_SUBJECT"],
         html_body,
     )
 
