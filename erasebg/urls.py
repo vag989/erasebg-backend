@@ -21,7 +21,7 @@ from .views import get_csrf
 
 urlpatterns = [
     # path('api-auth/', include('rest_framework.urls')), #ToDo: remove this later
-    path('api/admin', admin.site.urls),
+    # path('api/admin', admin.site.urls),
     path('api/users/', include('users.urls')),
     path('api/infer/', include('infer.urls')),
     path('api/payments/', include('payments.urls')),
