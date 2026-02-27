@@ -84,9 +84,15 @@ MIDDLEWARE = [
 ]
 
 # csrf token related
-CSRF_COOKIE_NAME = "csrftoken"
-CSRF_COOKIE_HTTPONLY = False      # MUST be False because JS needs to read it
-CSRF_COOKIE_SECURE = True   
+CSRF_COOKIE_NAME     = config('CSRF_COOKIE_NAME', default='csrftoken')
+CSRF_COOKIE_HTTPONLY = config('CSRF_COOKIE_HTTPONLY', default=False)      # MUST be False because JS needs to read it
+CSRF_COOKIE_SECURE   = config('CSRF_COOKIE_SECURE', default=True)
+CSRF_COOKIE_SAMESITE = config('CSRF_COOKIE_SAMESITE', default=None)  
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv())
+
+# session cookies
+SESSION_COOKIE_SAMESITE = config('SESSION_COOKIE_SAMESITE', default="None")
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True)
 
 # OR allow specific origins
 CORS_ALLOW_CREDENTIALS = True
